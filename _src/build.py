@@ -27,14 +27,28 @@ OUT = SRC.parent / "assets"
 PROFILE = {
     "name": "SATURDAYS",
     "handle": "NEBXD1",
-    "role": "WEB DEVELOPER",
-    # (name, what it does, symbol shown on the monitor)
-    "skills": [
-        ("HTML", "STRUCTURE", "</>"),
-        ("CSS", "STYLE", "{ }"),
-        ("JAVASCRIPT", "BEHAVIOR", "=>"),
+    # Cycles above the name in the identity panel.
+    "roles": ["FULL STACK DEVELOPER", "DESIGNER", "AI WORKFLOW BUILDER"],
+    "tagline": "EXPLORING AI, DISTRIBUTED SYSTEMS & SCALABLE ARCHITECTURES",
+    # (label, line) rows of the mission briefing; the mission itself closes it.
+    "briefing": [
+        ("PROFILE", "Full stack developer passionate about building impactful products."),
+        ("BUILDING", "Products for the next generation of the internet."),
+        ("LEARNING", "Constantly learning and experimenting with new technologies."),
     ],
-    "ticker": ["SATURDAYS — WEB DEVELOPER", "HTML · CSS · JAVASCRIPT", "STATUS: ONLINE"],
+    "mission": "EMPOWER PEOPLE THROUGH TECHNOLOGY AND INNOVATION",
+    # (name, detail, monitor art: "code" | "design" | "ai")
+    "disciplines": [
+        ("FULL STACK", "HTML · CSS · JAVASCRIPT", "code"),
+        ("DESIGN", "UI & VISUAL DESIGN", "design"),
+        ("AI WORKFLOWS", "AI-POWERED AUTOMATION", "ai"),
+    ],
+    "ticker": [
+        "SATURDAYS — FULL STACK DEVELOPER · DESIGNER · AI WORKFLOWS",
+        "EXPLORING AI, DISTRIBUTED SYSTEMS & SCALABLE ARCHITECTURES",
+        "MISSION: EMPOWER PEOPLE THROUGH TECHNOLOGY",
+        "STATUS: ONLINE",
+    ],
     "ticker_buttons": ["REPOSITORIES", "FOLLOW"],
     "footer": {
         "left": "© 2026 SATURDAYS",
@@ -192,6 +206,18 @@ class SVG:
 
 
 # ---------------------------------------------------------------- helpers ---
+def wrap(font, text, size, maxw):
+    lines, cur = [], ""
+    for word in text.split():
+        trial = f"{cur} {word}".strip()
+        if cur and font.width(trial, size) > maxw:
+            lines.append(cur)
+            cur = word
+        else:
+            cur = trial
+    return lines + [cur] if cur else lines
+
+
 def fit(font, lines, maxw, maxsize, ls_em=0.0):
     size = min(maxw / (font.width(l, 1) + ls_em * (len(l) - 1)) for l in lines)
     return min(maxsize, size)
@@ -310,8 +336,8 @@ def hero():
     """Identity readout under the banner: role, name, handle."""
     H = 420
     p = PROFILE
-    skills = "  ·  ".join(s[0] for s in p["skills"])
-    d = SVG("hero", H, f"{p['name']} — {p['role'].lower()}. @{p['handle'].lower()}: {skills}")
+    roles = ", ".join(r.lower() for r in p["roles"])
+    d = SVG("hero", H, f"{p['name']} — {roles}. {p['tagline'].capitalize()}.")
     px, py, pw, ph = 12, 12, W - 24, H - 24
     d.add(f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" fill="{PANEL}"/>')
     grid(d, px, py, pw, ph)
@@ -329,14 +355,24 @@ def hero():
 
     cx = W / 2
     d.add(f'<g class="fade">{bat(d, cx, 100, 1.5, BLUE, glow=True)}</g>')
-    kicker = p["role"]
-    d.add(d.text(cx, 150, kicker, MED, 30, ICE, "middle", 4, cls="up", style="animation-delay:.05s"))
+    # Roles take turns sliding through a slot above the name.
+    n, hold = len(p["roles"]), 3
+    cycle = n * hold
+    step = 100 / n
+    d.css.append(f".role{{animation:role {cycle}s cubic-bezier(.16,1,.3,1) infinite both}}"
+                 f"@keyframes role{{0%{{transform:translateY(34px);opacity:0}}"
+                 f"{step * .15:.1f}%,{step * .85:.1f}%{{transform:translateY(0);opacity:1}}"
+                 f"{step:.1f}%,100%{{transform:translateY(-34px);opacity:0}}}}")
+    cid = d.clip_rect(0, 118, W, 42)
+    slots = "".join(d.text(cx, 150, role, MED, 30, ICE, "middle", 4, cls="role",
+                           style=f"animation-delay:{i * hold}s") for i, role in enumerate(p["roles"]))
+    d.add(f'<g clip-path="url(#{cid})">{slots}</g>')
     size = fit(BOLD, [p["name"]], 820, 176, -0.01)
     base = headline(d, [p["name"]], cx, 168 + size * 0.72, size, TEXT, "middle", delay=0.15, glow=BLUE)
 
-    sub = f"@{p['handle']}  //  {skills}"
-    sw = MONO_B.width(sub, 14, 1)
-    d.add(d.text(cx - 8, base + 50, sub, MONO_B, 14, MUTED, "middle", 1, cls="up", style="animation-delay:.6s"))
+    sub = p["tagline"]
+    sw = MONO_B.width(sub, 13, 0.8)
+    d.add(d.text(cx - 8, base + 50, sub, MONO_B, 13, MUTED, "middle", 0.8, cls="up", style="animation-delay:.6s"))
     d.add(f'<rect x="{cx - 8 + sw / 2 + 8:.1f}" y="{base + 38}" width="9" height="15" fill="{AMBER}" class="blink"/>')
 
     status_dot(d, 60, H - 57)
@@ -345,8 +381,56 @@ def hero():
     d.save()
 
 
-def monitor(d, x, y, w, h, symbol, seed, delay):
-    """One screen of the cave's monitor wall: scrolling code, a glowing glyph, reflection."""
+def art_code(d, x, y, w, h):
+    size = 52
+    sy = y + h / 2 + size * 0.36
+    return (f'<g filter="url(#{d.glow_filter(9)})">{d.text(x + w / 2, sy, "</>", MONO_B, size, BLUE, "middle")}</g>'
+            + d.text(x + w / 2, sy, "</>", MONO_B, size, ICE, "middle"))
+
+
+def art_design(d, x, y, w, h):
+    """A pen-tool bezier that draws itself, with anchors and handles."""
+    a0, c0 = (x + 30, y + h * 0.72), (x + w * 0.34, y + h * 0.08)
+    c1, a1 = (x + w * 0.62, y + h * 0.98), (x + w - 30, y + h * 0.3)
+    curve = f"M{a0[0]:.0f} {a0[1]:.0f}C{c0[0]:.0f} {c0[1]:.0f} {c1[0]:.0f} {c1[1]:.0f} {a1[0]:.0f} {a1[1]:.0f}"
+    d.css.append(".pen{stroke-dasharray:420;animation:pen 5s cubic-bezier(.6,0,.2,1) infinite}"
+                 "@keyframes pen{0%{stroke-dashoffset:420}45%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:-420}}")
+    handles = "".join(f'<line x1="{a[0]:.0f}" y1="{a[1]:.0f}" x2="{c[0]:.0f}" y2="{c[1]:.0f}"/>'
+                      for a, c in ((a0, c0), (a1, c1)))
+    knobs = "".join(f'<circle cx="{c[0]:.0f}" cy="{c[1]:.0f}" r="4.5"/>' for c in (c0, c1))
+    anchors = "".join(f'<rect x="{a[0] - 5:.0f}" y="{a[1] - 5:.0f}" width="10" height="10"/>' for a in (a0, a1))
+    return (f'<g stroke="{MUTED}" stroke-width="1.2" opacity=".8">{handles}</g>'
+            f'<path d="{curve}" fill="none" stroke="{BLUE}" stroke-width="7" opacity=".6" class="pen" '
+            f'filter="url(#{d.glow_filter(5)})"/>'
+            f'<path d="{curve}" fill="none" stroke="{ICE}" stroke-width="3" class="pen"/>'
+            f'<g fill="{PANEL}" stroke="{ICE}" stroke-width="1.5">{knobs}{anchors}</g>')
+
+
+def art_ai(d, x, y, w, h):
+    """A small workflow graph with data pulsing along its edges."""
+    pos = [(.16, .3), (.16, .72), (.5, .2), (.5, .5), (.5, .8), (.84, .5)]
+    pts = [(x + w * px, y + h * py) for px, py in pos]
+    edges = [(0, 2), (0, 3), (1, 3), (1, 4), (2, 5), (3, 5), (4, 5)]
+    d.css.append(".flow{stroke-dasharray:3 9;animation:flow 1.2s linear infinite}"
+                 "@keyframes flow{to{stroke-dashoffset:-24}}"
+                 ".pulse{transform-box:fill-box;transform-origin:center;animation:pulse 1.6s ease-in-out infinite}"
+                 "@keyframes pulse{50%{transform:scale(1.35)}}")
+    lines = "".join(f'<line x1="{pts[a][0]:.0f}" y1="{pts[a][1]:.0f}" x2="{pts[b][0]:.0f}" y2="{pts[b][1]:.0f}"/>'
+                    for a, b in edges)
+    nodes = "".join(f'<circle cx="{px:.0f}" cy="{py:.0f}" r="7"/>' for px, py in pts[:-1])
+    ox, oy = pts[-1]
+    return (f'<g stroke="{BLUE}" stroke-width="1.5" opacity=".35">{lines}</g>'
+            f'<g stroke="{ICE}" stroke-width="2.5" class="flow">{lines}</g>'
+            f'<g fill="{PANEL}" stroke="{ICE}" stroke-width="2">{nodes}</g>'
+            f'<circle cx="{ox:.0f}" cy="{oy:.0f}" r="14" fill="{AMBER}" opacity=".25" class="pulse"/>'
+            f'<circle cx="{ox:.0f}" cy="{oy:.0f}" r="8" fill="{AMBER}"/>')
+
+
+ARTS = {"code": art_code, "design": art_design, "ai": art_ai}
+
+
+def monitor(d, x, y, w, h, art, seed, delay):
+    """One screen of the cave's monitor wall: scrolling code, glowing artwork, reflection."""
     rng = random.Random(seed)
     d.add(f'<ellipse cx="{x + w / 2}" cy="{y + h + 26}" rx="{w * 0.45}" ry="10" fill="{BLUE}" '
           f'opacity=".18" filter="url(#{d.glow_filter(10)})"/>')
@@ -378,23 +462,83 @@ def monitor(d, x, y, w, h, symbol, seed, delay):
           f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="url(#{sg})"/>'
           f'<g class="{name}">{"".join(bars)}</g>'
           f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{BG}" opacity=".45"/></g>')
-    fid = d.glow_filter(9)
-    sym_size = 52
-    sy = y + h / 2 + sym_size * 0.36
-    d.add(f'<g class="up" style="animation-delay:{delay + .2:.2f}s">'
-          f'<g filter="url(#{fid})">{d.text(x + w / 2, sy, symbol, MONO_B, sym_size, BLUE, "middle")}</g>'
-          f'{d.text(x + w / 2, sy, symbol, MONO_B, sym_size, ICE, "middle")}</g>')
+    d.add(f'<g class="up" style="animation-delay:{delay + .2:.2f}s">{ARTS[art](d, x, y, w, h)}</g>')
     scanlines(d, x, y, w, h, band=False)
+
+
+def radar(d, cx, cy, r):
+    """Sweeping radar scope with blinking contacts."""
+    d.add(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{PANEL}"/>')
+    d.add(f'<g fill="none" stroke="{BLUE}" opacity=".3">'
+          + "".join(f'<circle cx="{cx}" cy="{cy}" r="{r * k:.1f}"/>' for k in (1, .66, .33))
+          + f'<line x1="{cx - r}" x2="{cx + r}" y1="{cy}" y2="{cy}"/>'
+            f'<line x1="{cx}" x2="{cx}" y1="{cy - r}" y2="{cy + r}"/></g>')
+    wedges = []
+    for i in range(14):
+        a0, a1 = math.radians(-i * 4), math.radians(-(i + 1) * 4)
+        wedges.append(f'<path d="M{cx} {cy}L{cx + r * math.cos(a0):.1f} {cy + r * math.sin(a0):.1f}'
+                      f'A{r} {r} 0 0 0 {cx + r * math.cos(a1):.1f} {cy + r * math.sin(a1):.1f}Z" '
+                      f'opacity="{0.4 * (1 - i / 14):.2f}"/>')
+    d.css.append(f".sweep{{transform-origin:{cx}px {cy}px;animation:sweep 4s linear infinite}}"
+                 f"@keyframes sweep{{to{{transform:rotate(360deg)}}}}")
+    d.add(f'<g class="sweep" fill="{BLUE}">{"".join(wedges)}'
+          f'<line x1="{cx}" y1="{cy}" x2="{cx + r}" y2="{cy}" stroke="{ICE}" stroke-width="1.5"/></g>')
+    for i, (bx, by) in enumerate([(.45, -.3), (-.5, .35), (.2, .6)]):
+        d.add(f'<circle cx="{cx + r * bx:.1f}" cy="{cy + r * by:.1f}" r="3.5" fill="{AMBER if i == 0 else ICE}" '
+              f'class="blink" style="animation-delay:{i * .35:.2f}s"/>')
+    d.add(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{LINE}" stroke-width="2"/>')
+
+
+def briefing():
+    """Dossier of who I am and what I'm after, beside a radar scope."""
+    p = PROFILE
+    rows = p["briefing"]
+    x0, x1 = 440, W - 56
+    size, lh = 25, 32
+    wrapped = [wrap(MED, line, size, x1 - x0) for _, line in rows]
+    msize = fit(BOLD, ["TECHNOLOGY AND INNOVATION"], x1 - x0, 44)
+    mission = wrap(BOLD, p["mission"], msize, x1 - x0)
+    H = 70 + sum(56 + len(ls) * lh for ls in wrapped) + 60 + len(mission) * msize * 0.95 + 56
+    H = max(H, 540)
+    d = SVG("briefing", round(H), "Mission briefing: " + " ".join(l for _, l in rows)
+            + f" Mission: {p['mission'].capitalize()}.")
+    grid(d, 0, 0, W, H)
+    d.add(f'<rect x="12" y="0" width="{W - 24}" height="{H}" fill="{PANEL}" opacity=".55"/>')
+
+    x = 56
+    bracket(d, x, 64, "BRIEFING")
+    headline(d, ["MISSION", "BRIEFING"], x - 4, 150, 84, TEXT, glow=BLUE)
+    radar(d, 196, 360, 108)
+    d.add(d.text(x, H - 52, f"FILE // {p['name']}", MONO_B, 12, MUTED, ls=0.5))
+    d.add(d.text(x, H - 32, "CLEARANCE // PUBLIC", MONO_B, 12, DIM, ls=0.5))
+
+    y = 64
+    for i, ((label, _), lines) in enumerate(zip(rows, wrapped)):
+        delay = 0.3 + i * 0.15
+        parts = [f'<line x1="{x0}" x2="{x1}" y1="{y - 18}" y2="{y - 18}" stroke="{LINE}"/>',
+                 d.text(x0, y + 8, f"{i + 1:02d} // {label}", MONO_B, 12, BLUE, ls=0.6)]
+        for j, line in enumerate(lines):
+            parts.append(d.text(x0, y + 44 + j * lh, line, MED, size, TEXT))
+        d.add(f'<g class="up" style="animation-delay:{delay:.2f}s">{"".join(parts)}</g>')
+        y += 56 + len(lines) * lh + 8
+
+    y += 10
+    parts = [f'<line x1="{x0}" x2="{x1}" y1="{y - 18}" y2="{y - 18}" stroke="{AMBER}" opacity=".6"/>',
+             d.text(x0, y + 8, f"{len(rows) + 1:02d} // MISSION", MONO_B, 12, AMBER, ls=0.6)]
+    d.add(f'<g class="up" style="animation-delay:{0.3 + len(rows) * 0.15:.2f}s">{"".join(parts)}</g>')
+    headline(d, mission, x0 - 2, y + 22 + msize * 0.72, msize, ICE,
+             delay=0.4 + len(rows) * 0.15, lh=0.95, glow=BLUE)
+    d.save()
 
 
 def skills():
     H = 510
-    items = PROFILE["skills"]
-    d = SVG("skills", H, "Skills: " + ", ".join(f"{n} ({what.lower()})" for n, what, _ in items))
+    items = PROFILE["disciplines"]
+    d = SVG("skills", H, "What I do: " + ", ".join(f"{n.lower()} ({what.lower()})" for n, what, _ in items))
     grid(d, 0, 0, W, H)
     x = 56
-    bracket(d, x, 64, "SKILLS")
-    headline(d, ["THE TOOLKIT"], x - 4, 150, 96, TEXT, delay=0.1, glow=BLUE)
+    bracket(d, x, 64, "CAPABILITIES")
+    headline(d, ["WHAT I DO"], x - 4, 150, 96, TEXT, delay=0.1, glow=BLUE)
     online = f"{len(items):02d} SYSTEMS ONLINE"
     status_dot(d, W - 56 - MONO_B.width(online, 12, 0.5) - 16, 139)
     d.add(d.text(W - 56, 144, online, MONO_B, 12, MUTED, "end", 0.5))
@@ -402,14 +546,15 @@ def skills():
     gap = 28
     mw = (W - 2 * x - gap * (len(items) - 1)) / len(items)
     my, mh = 200, 160
-    for i, (name, what, symbol) in enumerate(items):
+    nsize = fit(BOLD, [n for n, _, _ in items], mw, 48)
+    for i, (name, what, art) in enumerate(items):
         mx = x + i * (mw + gap)
-        monitor(d, mx, my, mw, mh, symbol, seed=i + 3, delay=0.2 + i * 0.15)
+        monitor(d, mx, my, mw, mh, art, seed=i + 3, delay=0.2 + i * 0.15)
         ly = my + mh + 26
         d.add(f'<g class="up" style="animation-delay:{0.4 + i * 0.15:.2f}s">'
               f'<line x1="{mx - 7}" x2="{mx + mw + 7}" y1="{ly}" y2="{ly}" stroke="{LINE}"/>'
               + d.text(mx - 6, ly + 26, f"{i + 1:02d} / {what}", MONO_B, 12, MUTED, ls=0.5)
-              + d.text(mx - 8, ly + 76, name, BOLD, 48, TEXT, ls=-0.4)
+              + d.text(mx - 8, ly + 76, name, BOLD, nsize, TEXT, ls=-0.4)
               + "</g>")
     d.save()
 
@@ -450,5 +595,6 @@ if __name__ == "__main__":
     print(f"Writing SVGs to {OUT}")
     ticker()
     hero()
+    briefing()
     skills()
     footer()
