@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>nebxd1 profile preview</title>
+<style>
+  body { margin: 0; background: #0d1117; font: 14px -apple-system, "Segoe UI", sans-serif; color: #e6edf3; }
+  body.light { background: #fff; color: #1f2328; }
+  .wrap { max-width: 896px; margin: 24px auto; border: 1px solid #30363d; border-radius: 6px; padding: 24px; }
+  .light .wrap { border-color: #d0d7de; }
+  .head { font-size: 12px; margin-bottom: 16px; opacity: .7; }
+  .readme { text-align: center; }
+  img { max-width: 100%; }
+  button { position: fixed; top: 10px; right: 10px; }
+</style>
+<button onclick="document.body.classList.toggle('light')">Toggle light/dark</button>
+<div class="wrap">
+  <div class="head">nebxd1 / README.md</div>
+  <div class="readme" id="readme"></div>
+</div>
+<script>
+  // Mirrors the <img> stack in ../README.md so the preview matches GitHub's inline layout.
+  const files = ["ticker", "hero", "about", "skills", "stats", "project-01", "project-02", "contact", "footer"];
+  document.getElementById("readme").innerHTML =
+    files.map(f => `<img src="../assets/${f}.svg" width="100%">`).join("\n");
+</script>
