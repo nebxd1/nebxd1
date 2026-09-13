@@ -1,6 +1,5 @@
 <div align="center">
-
-  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:02040a,50:0b1220,100:000000&text=NEBXD1&fontColor=ffffff&fontSize=76&fontAlignY=42&desc=OPERATING%20AFTER%20DARK&descColor=8b9bb4&descAlignY=64&descSize=17" width="100%" />
+  <img src="batcave-banner.gif" width="100%" alt="NEBXD1 Batcave Banner" />
 
   <br><br>
 
@@ -256,17 +255,17 @@ Websites, interfaces, CMS architectures and custom experiences.
 ║                                              ║
 ║       NEBXD1 OPERATING PRINCIPLES            ║
 ║                                              ║
-║       01  MAKE IT BEAUTIFUL                 ║
+║       01  MAKE IT BEAUTIFUL                  ║
 ║                                              ║
-║       02  MAKE IT USEFUL                    ║
+║       02  MAKE IT USEFUL                     ║
 ║                                              ║
 ║       03  MAKE IT FEEL EXPENSIVE             ║
 ║                                              ║
 ║       04  AUTOMATE THE BORING PARTS          ║
 ║                                              ║
-║       05  SHIP BEFORE PERFECTION              ║
+║       05  SHIP BEFORE PERFECTION             ║
 ║                                              ║
-║       06  NEVER EXPLAIN THE BATCAVE           ║
+║       06  NEVER EXPLAIN THE BATCAVE          ║
 ║                                              ║
 ╚══════════════════════════════════════════════╝
 </pre>
@@ -315,6 +314,13 @@ If you need me...
 
 <img src="https://img.shields.io/badge/ENTER_THE_BATCAVE-000000?style=for-the-badge&logo=github&logoColor=white" />
 
+</a>
+
+<br><br>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&height=120&section=footer&color=0:000000,50:0b1220,100:02040a" width="100%" />
+
+</div>
 </a>
 
 <br><br>
