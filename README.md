@@ -1,22 +1,78 @@
 <div align="center">
 
-# Hey 👋, I'm Matt
+<img src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:050505,50:111111,100:1a1a1a&text=NEBXD1&fontColor=ffffff&fontSize=72&fontAlignY=40&desc=THE%20NIGHT%20SHIFT%20ENGINEER&descAlignY=62&descSize=16" width="100%"/>
 
-### Building digital products, websites & AI systems
+<br>
+
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=20&duration=2800&pause=900&color=FFFFFF&center=true&vCenter=true&width=700&lines=Webflow+Architect.;AI+Workflow+Builder.;Digital+Product+Obsessive.;Professional+Overthinker.;Operating+After+Dark." />
+
+<br><br>
+
+<img src="https://komarev.com/ghpvc/?username=nebxd1&label=VISITORS&color=111111&style=for-the-badge" />
 
 </div>
 
 ---
 
-## 🧠 About Me
+<table>
+<tr>
+<td width="55%" valign="top">
 
-I'm a designer and developer focused on building premium digital experiences and AI-powered products.
+## 🦇 WHO IS NEBXD1?
 
-<div align="center">
+I'm a digital designer, developer and AI builder who prefers building things that feel **expensive, slightly mysterious, and unnecessarily polished.**
 
-![Webflow](https://img.shields.io/badge/Webflow-4353FF?style=for-the-badge&logo=webflow&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+I design websites.
 
-</div>
+I build digital products.
 
-### Building things I actually want to use.
+I automate things that probably shouldn't be automated.
+
+And occasionally disappear into the Batcave for 14 hours.
+
+<br>
+
+> **"Why make something normal when you can make it legendary?"**
+
+</td>
+
+<td width="45%" align="center">
+
+<img src="https://media.giphy.com/media/26xBukhY8zB1L7lM4/giphy.gif" width="280">
+
+<br><br>
+
+### 🕶️ CURRENT STATUS
+
+`BUILDING`
+
+`SCHEMING`
+
+`DEPLOYING`
+
+`REPEAT`
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🦇 THE BATCAVE
+
+```text
+                         █████████████████
+                    ████                     ████
+                 ███                             ███
+               ██                                   ██
+              ██       █████████████████████         ██
+             ██       ██                 ██           ██
+            ██       ██      NEBXD1      ██            ██
+            ██       ██                 ██             ██
+             ██       ███████████████████             ██
+              ██                                       ██
+               ███          ▓▓▓▓▓▓▓▓▓▓▓              ███
+                 ████      ▓  BUILD MODE ▓         ████
+                    █████████████████████████████████
+
+                         [ SYSTEM ONLINE ]
