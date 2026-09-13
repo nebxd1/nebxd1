@@ -18,7 +18,7 @@
 </div>
 <script>
   // Mirrors the <img> stack in ../README.md so the preview matches GitHub's inline layout.
-  const files = ["ticker", "hero", "about", "skills", "stats", "project-01", "project-02", "contact", "footer"];
+  const files = ["ticker.svg", "batcave.gif", "hero.svg", "skills.svg", "footer.svg"];
   document.getElementById("readme").innerHTML =
-    files.map(f => `<img src="../assets/${f}.svg" width="100%">`).join("\n");
+    files.map(f => `<img src="../assets/${f}" width="100%">`).join("\n");
 </script>
